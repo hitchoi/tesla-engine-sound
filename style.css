@@ -1,0 +1,591 @@
+:root {
+  --bg: #000;
+  --fg: #f5f5f7;
+  --dim: #8e8e93;
+  --line: #2c2c2e;
+  --fill: #1c1c1e;
+  --red: #ff453a;
+  --green: #32d74b;
+  --amber: #ffd60a;
+  --pad: clamp(16px, 2.6vw, 40px);
+  --thrust: 0;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', 'Noto Sans KR',
+    'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  word-break: keep-all;
+}
+
+button:focus {
+  outline: none;
+}
+button:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 3px;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+/* ── 머리 ─────────────────────────────── */
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 18px var(--pad);
+  border-bottom: 1px solid var(--line);
+}
+.brand {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.34em;
+}
+.brand span {
+  color: var(--dim);
+  margin-left: 0.6em;
+}
+.chips {
+  display: flex;
+  gap: 18px;
+}
+.chip {
+  font-size: 14px;
+  color: var(--dim);
+  white-space: nowrap;
+}
+.chip::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #48484a;
+  margin-right: 8px;
+  vertical-align: 2px;
+}
+.chip.ok::before {
+  background: var(--green);
+}
+.chip.wait::before {
+  background: var(--amber);
+}
+.chip.bad::before,
+.chip.live::before {
+  background: var(--red);
+}
+.chip.ok,
+.chip.live {
+  color: var(--fg);
+}
+
+.toast {
+  margin: 0;
+  padding: 12px var(--pad);
+  font-size: 15px;
+  border-bottom: 1px solid var(--line);
+  color: var(--fg);
+  background: #1a0d0c;
+}
+
+/* ── 배치 ─────────────────────────────── */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+}
+.cockpit {
+  padding: 28px var(--pad) 40px;
+  border-right: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  align-self: start;
+}
+.side-col section {
+  padding: 28px var(--pad) 32px;
+  border-bottom: 1px solid var(--line);
+}
+.side-col section:last-child {
+  border-bottom: 0;
+}
+.label {
+  margin: 0 0 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--dim);
+}
+.label span {
+  font-variant-numeric: tabular-nums;
+  margin-right: 14px;
+  color: var(--fg);
+}
+
+/* ── 계기 ─────────────────────────────── */
+.readout {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: end;
+  gap: 12px;
+}
+.readout b {
+  display: block;
+  font-weight: 200;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  line-height: 0.92;
+}
+.readout small {
+  display: block;
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--dim);
+  letter-spacing: 0.04em;
+}
+.speed b {
+  font-size: clamp(76px, 9.5vw, 148px);
+}
+.gear {
+  text-align: center;
+  padding-bottom: 6px;
+}
+.gear b {
+  font-size: clamp(44px, 4.6vw, 72px);
+  font-weight: 300;
+  min-width: 1.4ch;
+}
+.rpm {
+  text-align: right;
+}
+.rpm b {
+  font-size: clamp(48px, 5.4vw, 84px);
+}
+
+.tach {
+  position: relative;
+  height: 6px;
+  margin: 26px 0 16px;
+  background: var(--fill);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.tach i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+}
+#tachRed {
+  left: auto;
+  right: 0;
+  background: rgba(255, 69, 58, 0.32);
+}
+#tachFill {
+  width: 0;
+  background: var(--fg);
+  transition: background-color 0.15s;
+}
+#tachFill.hot {
+  background: var(--red);
+}
+.carline {
+  margin: 0 0 26px;
+  font-size: 15px;
+  color: var(--dim);
+  min-height: 1.4em;
+}
+.carline b {
+  color: var(--fg);
+  font-weight: 600;
+  margin-right: 10px;
+}
+
+/* ── 조작 ─────────────────────────────── */
+.controls {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+.start {
+  flex: 1 1 220px;
+  min-height: 72px;
+  border-radius: 36px;
+  background: var(--fg);
+  color: #000;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: transform 0.12s, background-color 0.2s, color 0.2s;
+}
+.start:active {
+  transform: scale(0.98);
+}
+.start.on {
+  background: transparent;
+  color: var(--red);
+  box-shadow: inset 0 0 0 1.5px var(--red);
+}
+.seg {
+  flex: 1 1 260px;
+  display: flex;
+  border-radius: 36px;
+  box-shadow: inset 0 0 0 1px var(--line);
+  padding: 5px;
+}
+.seg button {
+  flex: 1;
+  border-radius: 31px;
+  font-size: 17px;
+  color: var(--dim);
+  min-height: 62px;
+  transition: background-color 0.2s, color 0.2s;
+}
+.seg button[aria-pressed='true'] {
+  background: var(--fill);
+  color: var(--fg);
+}
+.seg.small {
+  flex: 0 0 auto;
+}
+.seg.small button {
+  min-height: 44px;
+  padding: 0 20px;
+  font-size: 15px;
+}
+
+.pane {
+  margin-top: 18px;
+}
+.hint {
+  margin: 14px 0 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--dim);
+}
+.rev {
+  width: 100%;
+  min-height: 120px;
+  border-radius: 20px;
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-size: 30px;
+  font-weight: 300;
+  letter-spacing: 0.32em;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  transition: background-color 0.12s, color 0.12s;
+}
+.rev small {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: var(--dim);
+}
+.rev.held {
+  background: var(--fg);
+  color: #000;
+}
+.rev.held small {
+  color: #3a3a3c;
+}
+
+.pedals {
+  display: grid;
+  grid-template-columns: 0.9fr 1.3fr 1fr;
+  gap: 12px;
+  height: clamp(220px, 34vh, 300px);
+}
+.pedal {
+  position: relative;
+  border-radius: 18px;
+  box-shadow: inset 0 0 0 1px var(--line);
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+}
+.pedal i {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 0;
+  background: rgba(245, 245, 247, 0.16);
+  border-bottom: 2px solid var(--fg);
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+.pedal.down i {
+  opacity: 1;
+}
+.pedal span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 18px;
+  text-align: center;
+  font-size: 16px;
+  color: var(--dim);
+}
+.pedal.down span {
+  color: var(--fg);
+}
+.pedal.gas em {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 16%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-style: normal;
+  font-size: 13px;
+  color: var(--dim);
+  border-bottom: 1px dashed #48484a;
+}
+.pedal.gas.hold em {
+  color: #000;
+  background: var(--fg);
+}
+.side {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 12px;
+}
+.rev.small {
+  min-height: 0;
+  font-size: 22px;
+}
+.demo {
+  min-height: 60px;
+  border-radius: 18px;
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-size: 15px;
+}
+.demo.on {
+  background: var(--fill);
+}
+
+/* ── 차량 ─────────────────────────────── */
+.cars {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 10px;
+}
+.car {
+  position: relative;
+  text-align: left;
+  padding: 16px 18px 15px;
+  min-height: 86px;
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 1px var(--line);
+  transition: box-shadow 0.15s, background-color 0.15s;
+}
+.car b {
+  display: block;
+  font-size: 17px;
+  font-weight: 600;
+  padding-right: 28px;
+}
+.car span {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--dim);
+}
+.car small {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 11px;
+  color: #636366;
+  font-variant-numeric: tabular-nums;
+}
+.car[aria-pressed='true'] {
+  box-shadow: inset 0 0 0 1.5px var(--fg);
+  background: var(--fill);
+}
+
+/* ── 조절 ─────────────────────────────── */
+.sliders {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px 28px;
+}
+.sl {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  row-gap: 10px;
+  font-size: 15px;
+}
+.sl output {
+  font-variant-numeric: tabular-nums;
+  color: var(--dim);
+}
+.sl input {
+  grid-column: 1 / -1;
+}
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 32px;
+  margin: 0;
+  background: transparent;
+  touch-action: pan-y;
+  --p: 50%;
+}
+input[type='range']::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(to right, var(--fg) var(--p), #3a3a3c var(--p));
+}
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 28px;
+  height: 28px;
+  margin-top: -12.5px;
+  border-radius: 50%;
+  background: var(--fg);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+input[type='range']::-moz-range-track {
+  height: 3px;
+  background: #3a3a3c;
+}
+input[type='range']::-moz-range-progress {
+  height: 3px;
+  background: var(--fg);
+}
+input[type='range']::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--fg);
+}
+.unitrow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 26px;
+  font-size: 15px;
+}
+
+/* ── 사용법 ───────────────────────────── */
+.howto {
+  margin: 0;
+  padding-left: 1.3em;
+  font-size: 15px;
+  line-height: 1.7;
+}
+.howto li + li {
+  margin-top: 6px;
+}
+.defs {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 18px;
+  margin: 22px 0 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.defs dt {
+  color: var(--fg);
+}
+.defs dd {
+  margin: 0;
+  color: var(--dim);
+}
+.notes,
+.compat {
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--dim);
+}
+.compat li::before {
+  content: '○';
+  margin-right: 8px;
+}
+.compat li.yes::before {
+  content: '●';
+  color: var(--green);
+}
+.compat li.no::before {
+  content: '●';
+  color: var(--red);
+}
+
+/* ── 로드스터 추진기 분사 ───────────────── */
+.fx {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 46vh;
+  pointer-events: none;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  opacity: var(--thrust);
+  background: radial-gradient(120% 70% at 50% 100%, rgba(235, 240, 255, calc(var(--thrust) * 0.28)), transparent 70%);
+}
+.fx i {
+  width: 9vw;
+  height: calc(var(--thrust) * 42vh);
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  background: linear-gradient(to top, rgba(255, 255, 255, 0.85), rgba(200, 215, 255, 0.25) 55%, transparent);
+  filter: blur(6px);
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .cockpit {
+    position: static;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .sliders {
+    grid-template-columns: 1fr;
+  }
+  .chips {
+    gap: 12px;
+  }
+  .chip {
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}

@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="테슬라 브라우저에서 GPS 속도에 맞춰 엔진 소리를 실시간으로 합성합니다." />
+    <title>Engine Sound</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="top">
+      <div class="brand">ENGINE<span>SOUND</span></div>
+      <div class="chips">
+        <span id="chipGps" class="chip">GPS 꺼짐</span>
+        <span id="chipEng" class="chip">엔진 꺼짐</span>
+      </div>
+    </header>
+    <div id="toast" class="toast" hidden></div>
+
+    <main class="layout">
+      <section class="cockpit" aria-label="계기와 조작">
+        <h2 class="label"><span>01</span>계기</h2>
+        <div class="readout">
+          <div class="speed">
+            <b id="spd">0</b>
+            <small id="unitLbl">km/h</small>
+          </div>
+          <div class="gear"><b id="gear">N</b><small>기어</small></div>
+          <div class="rpm">
+            <b id="rpm">0</b>
+            <small id="rpmUnit">rpm</small>
+          </div>
+        </div>
+        <div class="tach" aria-hidden="true">
+          <i id="tachRed"></i>
+          <i id="tachFill"></i>
+        </div>
+        <p class="carline"><b id="carName"></b><span id="carSpec"></span></p>
+
+        <div class="controls">
+          <button id="btnStart" class="start" type="button">엔진 시동</button>
+          <div class="seg" role="group" aria-label="주행 방식">
+            <button type="button" data-mode="gps">GPS 주행</button>
+            <button type="button" data-mode="test">시험 주행</button>
+          </div>
+        </div>
+
+        <div id="gpsPane" class="pane">
+          <button id="btnRev" class="rev" type="button">REV<small>정차 중 길게 누르기</small></button>
+          <p class="hint" id="gpsHint">시동을 걸면 위치 권한을 물어봅니다. 허용해야 속도에 맞춰 회전수가 오릅니다.</p>
+        </div>
+
+        <div id="testPane" class="pane" hidden>
+          <div class="pedals">
+            <div id="pedBrake" class="pedal brake" role="button" aria-label="브레이크">
+              <i></i><span>브레이크</span>
+            </div>
+            <div id="pedGas" class="pedal gas" role="button" aria-label="가속">
+              <i></i><em>속도 유지</em><span>가속</span>
+            </div>
+            <div class="side">
+              <button id="btnRev2" class="rev small" type="button">REV</button>
+              <button id="btnDemo" class="demo" type="button">▶ 데모 주행</button>
+            </div>
+          </div>
+          <p class="hint">페달은 아래쪽을 누를수록 세게 밟힙니다. 가속 페달 맨 위는 지금 속도를 유지합니다.</p>
+        </div>
+      </section>
+
+      <div class="side-col">
+        <section aria-label="차량">
+          <h2 class="label"><span>02</span>차량</h2>
+          <div id="cars" class="cars"></div>
+        </section>
+
+        <section aria-label="조절">
+          <h2 class="label"><span>03</span>조절</h2>
+          <div class="sliders">
+            <label class="sl"><span>볼륨</span><output data-for="volume"></output>
+              <input type="range" min="0" max="1" step="0.01" data-key="volume" /></label>
+            <label class="sl"><span>반응 세기</span><output data-for="intensity"></output>
+              <input type="range" min="0" max="1" step="0.01" data-key="intensity" /></label>
+            <label class="sl"><span>성격</span><output data-for="character"></output>
+              <input type="range" min="0" max="1" step="0.01" data-key="character" /></label>
+            <label class="sl"><span>팝·크래클</span><output data-for="crackle"></output>
+              <input type="range" min="0" max="1" step="0.01" data-key="crackle" /></label>
+            <label class="sl"><span>휘잉 높이</span><output data-for="whinePitch"></output>
+              <input type="range" min="0.5" max="2" step="0.01" data-key="whinePitch" /></label>
+            <label class="sl"><span>휘잉 크기</span><output data-for="whineVol"></output>
+              <input type="range" min="0" max="1" step="0.01" data-key="whineVol" /></label>
+          </div>
+          <div class="unitrow">
+            <span>속도 단위</span>
+            <div class="seg small" role="group" aria-label="속도 단위">
+              <button type="button" data-unit="kmh">km/h</button>
+              <button type="button" data-unit="mph">mph</button>
+            </div>
+          </div>
+        </section>
+
+        <section aria-label="사용법">
+          <h2 class="label"><span>04</span>사용법</h2>
+          <ol class="howto">
+            <li>차를 세운 상태에서 이 페이지를 테슬라 브라우저로 엽니다. 즐겨찾기에 넣어 두면 편합니다.</li>
+            <li><b>엔진 시동</b>을 누르고 위치 권한을 허용합니다. 위치가 없으면 회전수가 오르지 않습니다.</li>
+            <li>미디어 볼륨을 올리고 출발합니다. 속도에 맞춰 회전수가 오르고 변속합니다.</li>
+            <li>신호 대기 중에는 <b>REV</b>를 길게 눌러 회전을 띄울 수 있습니다.</li>
+          </ol>
+          <dl class="defs">
+            <dt>반응 세기</dt><dd>가속을 얼마나 깊은 스로틀로 받아들일지, 얼마나 늦게 변속할지.</dd>
+            <dt>성격</dt><dd>순정 머플러의 얌전한 소리에서 열린 배기·거친 캠까지. 전기차는 버즈가 거칠고 밝아집니다.</dd>
+            <dt>팝·크래클</dt><dd>발을 뗄 때 배기에서 터지는 소리. 0%면 깨끗하게 돕니다.</dd>
+            <dt>휘잉</dt><dd>모터·기어·슈퍼차저·터보의 높은 소리.</dd>
+          </dl>
+          <ul class="notes">
+            <li>위치는 이 브라우저 안에서 속도를 재는 데만 쓰고 어디로도 보내지 않습니다.</li>
+            <li>GPS 특성상 실제보다 0.5~1초 늦게 따라옵니다.</li>
+            <li>다른 화면으로 가리거나 브라우저를 닫으면 소리가 멈춥니다. 소리는 실내 스피커로만 나옵니다.</li>
+          </ul>
+          <ul id="compat" class="compat"></ul>
+        </section>
+      </div>
+    </main>
+
+    <div id="fx" class="fx" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
