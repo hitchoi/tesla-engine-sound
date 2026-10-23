@@ -1,14 +1,15 @@
 """헤드리스 크롬으로 페이지를 띄워 시동·가속·차량 전환·GPS 모의 주행을 확인한다.
-사용: python test/browser_check.py http://localhost:8765/ [캡처 폴더]"""
+사용: python test/browser_check.py http://localhost:8765/ [캡처 폴더] [chromium|webkit]"""
 import asyncio, sys, json
 from playwright.async_api import async_playwright
 
 URL = sys.argv[1]
-SHOTS = sys.argv[2] if len(sys.argv) > 2 else None
+SHOTS = sys.argv[2] if len(sys.argv) > 2 and sys.argv[2] != "-" else None
+ENGINE = sys.argv[3] if len(sys.argv) > 3 else "chromium"
 
 async def main():
     async with async_playwright() as pw:
-        b = await pw.chromium.launch(headless=True, args=["--autoplay-policy=no-user-gesture-required"])
+        b = await (pw.webkit.launch(headless=True) if ENGINE == "webkit" else pw.chromium.launch(headless=True, args=["--autoplay-policy=no-user-gesture-required"]))
         ctx = await b.new_context(viewport={"width": 1600, "height": 1000}, permissions=["geolocation"],
                                   geolocation={"latitude": 37.5, "longitude": 127.0, "accuracy": 5})
         page = await ctx.new_page()

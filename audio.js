@@ -14,6 +14,10 @@ export class AudioEngine {
       await this.ctx.resume();
       return;
     }
+    // 아이폰 무음 스위치가 켜져 있어도 소리가 나게(사파리 16.4+)
+    try {
+      if (navigator.audioSession) navigator.audioSession.type = 'playback';
+    } catch {}
     const AC = window.AudioContext || window.webkitAudioContext;
     const ctx = new AC({ latencyHint: 'interactive' });
     this.ctx = ctx;

@@ -134,10 +134,10 @@ function stopGps() {
 
 function onPos(pos) {
   const c = pos.coords;
-  gps.push(
-    { lat: c.latitude, lon: c.longitude, speed: c.speed, accuracy: c.accuracy, t: pos.timestamp || Date.now() },
-    performance.now(),
-  );
+  // 웹킷(아이폰 사파리)은 timestamp 를 마이크로초로 준다. 단위가 어긋나면 받은 시각을 쓴다
+  const wall = Date.now();
+  const t = Number.isFinite(pos.timestamp) && Math.abs(pos.timestamp - wall) < 10000 ? pos.timestamp : wall;
+  gps.push({ lat: c.latitude, lon: c.longitude, speed: c.speed, accuracy: c.accuracy, t }, performance.now());
   gpsAcc = c.accuracy;
   setGps('ok');
 }
